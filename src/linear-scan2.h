@@ -11,6 +11,7 @@ class LiveInterval;
 struct LinearScan2 : RegAllocImpl {
 public:
     explicit LinearScan2(int R);
+    ~LinearScan2();
 
     AllocResult Run(const LiveIntervalVec_t& live_intervals) override;
 
@@ -24,6 +25,9 @@ private:
     void SpillInterval(const LiveInterval* vi);
     Reg* AllocReg();
     void FreeReg(Reg* reg);
+
+    void CreateFreeRegs();
+    void DeleteFreeRegs();
 private:
     /// fill it in Run
     AllocResult* alloc_result_{nullptr};

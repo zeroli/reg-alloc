@@ -18,7 +18,7 @@ static LiveIntervalVec_t MakeLiveIntevals1()
     intervals.emplace_back(new LiveInterval(new Variable("D"), IntervalRange{4, 9}));
     intervals.emplace_back(new LiveInterval(new Variable("E"), IntervalRange{5, 8}));
 
-    std::cerr << "var intervals:\n" << intervals << "\n";
+    std::cerr << "input var intervals:\n" << intervals << "\n";
 
     return intervals;
 }
@@ -33,7 +33,7 @@ static LiveIntervalVec_t MakeLiveIntevals2()
     intervals.emplace_back(new LiveInterval(new Variable("D"), IntervalRange{4, 9}));
     intervals.emplace_back(new LiveInterval(new Variable("E"), IntervalRange{5, 8}));
 
-    std::cerr << "var intervals:\n" << intervals << "\n";
+    std::cerr << "input var intervals:\n" << intervals << "\n";
 
     return intervals;
 }
@@ -45,7 +45,7 @@ static LiveIntervalVec_t MakeLiveIntevals3()
     intervals.emplace_back(new LiveInterval(new Variable("A"), IntervalRange{0, 3}));
     intervals.emplace_back(new LiveInterval(new Variable("B"), IntervalRange{1, 5}));
 
-    std::cerr << "var intervals:\n" << intervals << "\n";
+    std::cerr << "input var intervals:\n" << intervals << "\n";
 
     return intervals;
 }

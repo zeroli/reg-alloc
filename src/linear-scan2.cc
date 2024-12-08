@@ -14,7 +14,12 @@ static std::string RegName(int idx) {
 LinearScan2::LinearScan2(int R)
     : RegAllocImpl(R)
 {
+    CreateFreeRegs();
+}
 
+LinearScan2::~LinearScan2()
+{
+    DeleteFreeRegs();
 }
 
 AllocResult LinearScan2::Run(const LiveIntervalVec_t& live_intervals)
@@ -54,17 +59,23 @@ void LinearScan2::Reset()
     alloc_result_ = nullptr;
     actives_.clear();
     stkloc_ = 0;
+}
 
-    for (auto& reg : free_regs_) {
-        delete reg;
-    }
-    free_regs_.clear();
-
+void LinearScan2::CreateFreeRegs()
+{
     std::cerr << R_ << " registered to be allocated\n";
     for (int i = 0; i < R_; i++) {
         free_regs_.emplace_back(new Reg{RegName(i)});
         std::cerr << "reg " << free_regs_.back()->name() << "\n";
     }
+}
+
+void LinearScan2::DeleteFreeRegs()
+{
+    for (auto& reg : free_regs_) {
+        delete reg;
+    }
+    free_regs_.clear();
 }
 
 /// try to determine if there is old interval which could have determined reg assigned

@@ -42,6 +42,7 @@ inline std::ostream& operator <<(std::ostream& os, const AllocResult& result)
         os << "var: " << vr.first->name() << ", ";
         os << "reg: " << vr.second.name() << "\n";
     }
+    os << "----------------------------\n";
     os << "variable spill to stack loc:\n";
     os << "----------------------------\n";
 
