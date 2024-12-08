@@ -26,8 +26,8 @@ AllocResult LinearScan::Run(const LiveIntervalVec_t& live_intervals)
 
     LiveIntervalVec_t sorted(live_intervals);
     // sort intervals in order of increasing start point
-    std::sort(sorted.begin(), sorted.end(), [](const LiveInterval& i1, const LiveInterval& i2) {
-        return i1.interal().start() < i2.interal().start();
+    std::sort(sorted.begin(), sorted.end(), [](const LiveInterval* i1, const LiveInterval* i2) {
+        return i1->interal().start() < i2->interal().start();
     });
     std::cerr << "sorted intervals:\n" << sorted << "\n";
 
@@ -42,7 +42,6 @@ AllocResult LinearScan::Run(const LiveIntervalVec_t& live_intervals)
             AddToActive(vi, reg_idx);
         }
     }
-
     return result;
 }
 
@@ -60,35 +59,39 @@ void LinearScan::Reset()
     }
 }
 
-void LinearScan::ExpireOldIntevals(const LiveInterval& vi)
+/// try to determine if there is old interval which could have determined reg assigned
+void LinearScan::ExpireOldIntevals(const LiveInterval* vi)
 {
     if (actives_.empty()) {
         return;
     }
     /// find the upper bound (>) interval whose end point farther than this vi's start point
-    LiveInterval sp(nullptr, IntervalRange{0, vi.interal().start()});
+    LiveInterval sp(nullptr, IntervalRange{0, vi->interal().start()});
     VarRegState lookup{&sp, -1};
     auto ub = actives_.upper_bound(lookup);
+    /// 那些在这个程序点之前的变量区间就可以确定分配到之前待定的寄存器
+    /// 因为它们的生命期已经结束
+    /// 释放寄存器，从而其它变量可以分配使用
     for (auto it = actives_.begin(); it != ub; ++it) {
         FreeReg(it->reg_idx_);
     }
     actives_.erase(actives_.begin(), ub);
 }
 
-void LinearScan::SpillAtInterval(const LiveInterval& vi)
+void LinearScan::SpillAtInterval(const LiveInterval* vi)
 {
     if (!actives_.empty()) {
         auto* spill = actives_.rbegin()->interal_;
         auto reg_idx = actives_.rbegin()->reg_idx_;
         /// this spill is farther away than this `vi`
-        if (spill->interal().end() > vi.interal().end()) {
+        if (spill->interal().end() > vi->interal().end()) {
             /// reigster[i] = register[spill]
             AssignReg(vi, reg_idx);
             /// location[spill] = new stackloc
-            SpillVar(*spill);
+            SpillVar(spill);
             /// NOTE: this var is spilled, determined, from beginning to end
             /// even though it's reg assigned before this point
-            AssignReg(*spill, -1);
+            AssignReg(spill, -1);
             /// remove spill from active
             auto toremove = actives_.rbegin();
             ++toremove;
@@ -120,23 +123,23 @@ void LinearScan::FreeReg(int reg_idx)
     regstates_[reg_idx].free_ = true;
 }
 
-void LinearScan::AssignReg(const LiveInterval& vi, int reg_idx)
+void LinearScan::AssignReg(const LiveInterval* vi, int reg_idx)
 {
     if (reg_idx >= 0) {
-        alloc_result_->regs().emplace(vi.var(), regstates_.at(reg_idx).reg_);
+        alloc_result_->regs().emplace(vi->var(), regstates_.at(reg_idx).reg_);
     } else {
-        alloc_result_->regs().erase(vi.var());
+        alloc_result_->regs().erase(vi->var());
     }
 }
 
-void LinearScan::AddToActive(const LiveInterval& vi, int reg_idx)
+void LinearScan::AddToActive(const LiveInterval* vi, int reg_idx)
 {
-    actives_.emplace(VarRegState{&vi, reg_idx});
+    actives_.emplace(VarRegState{vi, reg_idx});
 }
 
-void LinearScan::SpillVar(const LiveInterval& vi)
+void LinearScan::SpillVar(const LiveInterval* vi)
 {
-    alloc_result_->spills().emplace(vi.var(), StackLoc{NewStackLoc()});
+    alloc_result_->spills().emplace(vi->var(), StackLoc{NewStackLoc()});
 }
 
 }  // namespace regalloc

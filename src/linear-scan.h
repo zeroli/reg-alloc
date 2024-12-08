@@ -15,13 +15,13 @@ public:
 
 private:
     void Reset();
-    void ExpireOldIntevals(const LiveInterval& vi);
-    void SpillAtInterval(const LiveInterval& vi);
+    void ExpireOldIntevals(const LiveInterval* vi);
+    void SpillAtInterval(const LiveInterval* vi);
     int AllocReg();
     void FreeReg(int idx);
-    void AssignReg(const LiveInterval& vi, int reg_idx);
-    void SpillVar(const LiveInterval& vi);
-    void AddToActive(const LiveInterval& vi, int reg_idx);
+    void AssignReg(const LiveInterval* vi, int reg_idx);
+    void SpillVar(const LiveInterval* vi);
+    void AddToActive(const LiveInterval* vi, int reg_idx);
 
     int32_t NewStackLoc() {
         return stkloc_++;

@@ -61,12 +61,12 @@ inline std::ostream& operator <<(std::ostream& os, const LiveInterval& t)
     return os;
 }
 
-using LiveIntervalVec_t = std::vector<LiveInterval>;
+using LiveIntervalVec_t = std::vector<LiveInterval*>;
 
 inline std::ostream& operator <<(std::ostream& os, const LiveIntervalVec_t& t)
 {
     for (auto&& it : t) {
-        os << it << "\n";
+        os << *it << "\n";
     }
     return os;
 }
