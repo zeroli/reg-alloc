@@ -14,7 +14,8 @@ class RegAlloc {
 public:
     enum class algo {
         LINEAR_SCAN = 0,
-        GRAPH_COLORING = 1,
+        LINEAR_SCAN2 = 1,
+        GRAPH_COLORING = 2,
     };
     /// R: the number of registers
     RegAlloc(int R, algo algo = algo::LINEAR_SCAN);

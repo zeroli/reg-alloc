@@ -38,6 +38,18 @@ static LiveIntervalVec_t MakeLiveIntevals2()
     return intervals;
 }
 
+static LiveIntervalVec_t MakeLiveIntevals3()
+{
+    LiveIntervalVec_t intervals;
+    /// no free at all for simplity
+    intervals.emplace_back(new LiveInterval(new Variable("A"), IntervalRange{0, 3}));
+    intervals.emplace_back(new LiveInterval(new Variable("B"), IntervalRange{1, 5}));
+
+    std::cerr << "var intervals:\n" << intervals << "\n";
+
+    return intervals;
+}
+
 static void DeleteIntevales(const LiveIntervalVec_t& intervals)
 {
     for (auto* interval : intervals) {
@@ -67,6 +79,14 @@ int main(int argc, char** argv)
         auto result = regalloc.Run(live_intervals);
         std::cerr << ">>>>>>>>>>>>\n";
         std::cerr << "reg allocation result2\n" << result;
+        DeleteIntevales(live_intervals);
+    }
+    {
+        std::cerr << "============\n";
+        auto live_intervals = MakeLiveIntevals3();
+        auto result = regalloc.Run(live_intervals);
+        std::cerr << ">>>>>>>>>>>>\n";
+        std::cerr << "reg allocation result3\n" << result;
         DeleteIntevales(live_intervals);
     }
 }

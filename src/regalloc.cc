@@ -2,6 +2,7 @@
 
 #include "regalloc-impl.h"
 #include "linear-scan.h"
+#include "linear-scan2.h"
 
 #include <cassert>
 
@@ -14,6 +15,10 @@ std::unique_ptr<RegAllocImpl> MakeRegAlloc(int R, RegAlloc::algo algo)
         case RegAlloc::algo::LINEAR_SCAN: {
             fprintf(stderr, "linear scan algo chosen for reg alloc\n");
             return std::make_unique<LinearScan>(R);
+        }
+        case RegAlloc::algo::LINEAR_SCAN2: {
+            fprintf(stderr, "linear scan2 algo chosen for reg alloc\n");
+            return std::make_unique<LinearScan2>(R);
         }
         case RegAlloc::algo::GRAPH_COLORING: {
             fprintf(stderr, "graph-coloring algo chosen for reg alloc\n");
